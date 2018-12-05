@@ -6,21 +6,9 @@ from .models import tbValues
 from django.contrib import messages
 import pandas as pd
 from io import StringIO
+from .forms import inputForm
 
 
-from django import forms
-
-class inputForm(forms.Form):
-    barcode_num=forms.CharField(max_length=30,label='barcode_num', label_suffix="")
-    freeze_num=forms.CharField(max_length=10,label='freeze_num', label_suffix="")
-    box_num=forms.CharField(max_length=10, label='box_num', label_suffix="")
-    rack_num=forms.CharField(max_length=10, label='rack_num', label_suffix="")
-    well_num=forms.CharField(max_length=10, label='well_num', label_suffix="")
-
-
-
-#http://jeremyko.blogspot.com/search/label/Django
-# Create your views here.
 def index(request):
     tbValues_list=tbValues.objects.all()
     context={'tbValues_list':tbValues_list}
@@ -41,19 +29,24 @@ def edit_done(request,id):
     original.save()
     return HttpResponseRedirect(reverse('infos:index'))
 
-
+#get id from the html, and delete from database
 def remove(request,id):
     tbvalue=tbValues.objects.get(pk=id)
     tbvalue.delete()
     return HttpResponseRedirect(reverse('infos:index'))
 
+#add new data
 def add_new(request):
-    form=inputForm(request.POST)
-    print(form)
-    tb=tbValues(barcode_num=request.POST['barcode_num'],freeze_num=request.POST['freeze_num'],box_num=request.POST['box_num'],rack_num=request.POST['rack_num'],well_num=request.POST['well_num'])
-    tb.save()
-    return HttpResponseRedirect(reverse('infos:index'))
+    f=inputForm(request.POST)
+    if f.is_valid():
+        tb=tbValues(barcode_num=request.POST['barcode_num'],freeze_num=request.POST['freeze_num'],box_num=request.POST['box_num'],rack_num=request.POST['rack_num'],well_num=request.POST['well_num'])
+        tb.save()
+        return HttpResponseRedirect(reverse('infos:index'))
+    else:
+        messages.info(request, 'blank not allowed.. check the input data')
+        return HttpResponseRedirect(reverse('infos:index'))
 
+#search data with entered keyword
 def search(request):
     option_name=request.POST['option_name']
     search_keyword=request.POST['search']
@@ -65,6 +58,7 @@ def search(request):
         context={'tbValues_list': tbValues_list,'result':result}
     return render(request,'infos/index.html',context)
 
+#each option name (html->combobox data) have different filter parameter
 def search_result(option_name, search_keyword):
     if option_name == 'barcode_num':
         return tbValues.objects.filter(barcode_num__contains=search_keyword)
@@ -77,6 +71,7 @@ def search_result(option_name, search_keyword):
     elif option_name == 'well_num':
         return tbValues.objects.filter(well_num__contains=search_keyword)
 
+#open and read file -> insert data in to database
 def upload(request):
     if request.FILES.__len__()==0:
         messages.info(request, 'There are no files !')
@@ -93,10 +88,11 @@ def upload(request):
     data=pd.read_csv(testdata,sep='\t')
     print(data)
 
-    #check the null data
+    #check the null data in txt file
     if data.isnull().sum().sum()!=0:
         messages.info(request, 'check the file ! null data in file ')
         return HttpResponseRedirect(reverse('infos:index'))
+    #else, data save
     else:
         for index,row in data.iterrows():
             tb=tbValues(barcode_num=row['barcode_num'],freeze_num=row['freeze_num'],box_num=row['box_num'],rack_num=row['rack_num'],well_num=row['well_num'])
