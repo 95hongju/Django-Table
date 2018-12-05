@@ -1,0 +1,84 @@
+<table border=0 align=center>
+  <tr><td colspan=6><br></td></tr>
+  <tr align=center>
+    <form action="{% url 'infos:search' %}" method='POST'>
+      <td colspan="6">
+        <select name='option_name' class='srch'>
+          <option value="barcode_num">barcode number</option>
+          <option value="freeze_num">freeze number</option>
+          <option value="box_num">box number</option>
+          <option value="rack_num">rack number</option>
+          <option value="well_num">well number</option>
+        </select>
+        {% csrf_token %}
+        <input type=text placeholder="search" name='search'  style="width:60%;/>
+        <input type='submit' title='search' value="🔍" />
+      </td>
+    </form>
+  </tr>
+  <tr><td colspan=6>{{ result }}</td></tr>
+  <tr><td colspan=6><br></td></tr>
+  <tr style="font-size:13px; font-style:bold" align=center>
+
+    <td>barcode</td>
+    <td>freeze</td>
+    <td>box</td>
+    <td>rack</td>
+    <td>well</td>
+    <td></td>
+
+  </tr>
+{% for v in tbValues_list %}
+{%if v == tbvalue %}
+<form method="POST" action="{% url 'infos:edit_done' v.id %}">
+  {% csrf_token %}
+<tr align=center>
+
+
+  <td><input type =text value={{ v.barcode_num }} size="7" name='barcode_num'/></td>
+  <td><input type =text value={{ v.freeze_num }} size="2" name='freeze_num' /></td>
+  <td><input type =text value={{ v.box_num }} size="2" name='box_num' /></td>
+  <td><input type =text value={{ v.rack_num }} size="2" name='rack_num' /></td>
+  <td><input type =text value={{ v.well_num }} size="2" name='well_num' /></td>
+  <td>
+<input type='submit' value="✅" title='edit!!'/>
+<a  href="{% url 'infos:index' %}"><input type='button' value="🔙" title='cancel edit' /></a>
+
+  </td>
+</tr>
+</form>
+{% else %}
+<tr align=center>
+
+
+
+  <td>{{ v.barcode_num }}</td>
+  <td>{{ v.freeze_num }}</td>
+  <td>{{ v.box_num }}</td>
+  <td>{{ v.rack_num }}</td>
+  <td>{{ v.well_num }}</td>
+  <td>
+  <a href="{% url 'infos:edit' v.id %}"><input type='button' value="✏️" title='edit'/></a>
+  <a  href="{% url 'infos:remove' v.id %}"><input type='button' value="❌" title='remove'/></a>
+</td>
+</tr>
+
+{% endif %}
+{% endfor %}
+<tr><td colspan=6><br> </td></tr>
+  <form method="POST" action="{% url 'infos:add_new' %}">
+    {% csrf_token %}
+    <tr align=center class="addd">
+    <td><input type='text' class='bigsize' name='barcode_num' placeholder="barcode"/></td>
+    <td><input type='text' class='smallsize' name='freeze_num' placeholder="freeze"/></td>
+    <td><input type='text' class='smallsize' name='box_num' placeholder="box"/></td>
+    <td><input type='text' class='smallsize' name='rack_num' placeholder="rack"/></td>
+    <td><input type='text' class='smallsize' name='well_num' placeholder="well"/></td>
+    <td><input type='submit' value="🇦 🇩 🇩" title='add data' style="width:100%" class='btn'/></a>
+    </td>
+  </tr>
+  </form>
+
+</table>
+{% load static %}
+<link rel="stylesheet" type="text/css" href="{% static 'infos/style.css' %}" />
