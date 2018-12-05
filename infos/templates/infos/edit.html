@@ -11,12 +11,12 @@
           <option value="well_num">well number</option>
         </select>
         {% csrf_token %}
-        <input type=text placeholder="search" name='search'  style="width:60%;/>
+        <input type=text placeholder="search" name='search' style="width:60%;"/>
         <input type='submit' title='search' value="🔍" />
       </td>
     </form>
   </tr>
-  <tr><td colspan=6>{{ result }}</td></tr>
+  <tr><td colspan=6 class='result'>{{ result }}</td></tr>
   <tr><td colspan=6><br></td></tr>
   <tr style="font-size:13px; font-style:bold" align=center>
 
@@ -78,7 +78,29 @@
     </td>
   </tr>
   </form>
+  <form method="POST" enctype="multipart/form-data" action="{% url 'infos:upload' %}">
+    {% csrf_token %}
+    <tr>
+      <td colspan=6>
+        <input type="file" name="file" id="id_file" style="width:63%"/>
+        <input type="submit" value="🇺 🇵 🇱 🇴 🇦 🇩" class='btn' />
+        <br>
+        {% if messages %}
+        <ul class="messages1" >
+            {% for message in messages %}
+            <li>{{ message }}</li>
+            {% endfor %}
+        </ul>
+        {% else %}
+        <ul class="messages">
+          <li> only [ .txt ] files avaliable !</li>
+        </ul>
+        {% endif %}
+      </td>
+    </tr>
+  </form>
+  </table>
 
-</table>
-{% load static %}
-<link rel="stylesheet" type="text/css" href="{% static 'infos/style.css' %}" />
+
+  {% load static %}
+  <link rel="stylesheet" type="text/css" href="{% static 'infos/style.css' %}" />
