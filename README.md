@@ -1,5 +1,5 @@
 ## Django-Table
-2018 database insert,search,upload,edit,delete using django
+database insert,search,upload,edit,delete using django
 
 database - mysql
 
@@ -10,3 +10,7 @@ database - mysql
 ##### python manage.py migrate
 ##### python manage.py runserver
 ##### http://127.0.0.1:8000/infos/
+
+
+
+#####2018.12
