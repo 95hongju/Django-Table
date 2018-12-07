@@ -7,6 +7,8 @@ from django.contrib import messages
 import pandas as pd
 from io import StringIO
 from .forms import inputForm
+import os
+
 
 
 def index(request):
@@ -105,3 +107,9 @@ def upload(request):
             tb.save()
         messages.info(request, 'upload done !')
         return HttpResponseRedirect(reverse('infos:index'))
+
+def file_download(request):
+    f=str(os.getcwd())+'/test.txt'
+    response = HttpResponse(open(f,'rb'), content_type='application/vnd.ms-excel')
+    response['Content-Disposition'] = 'attachment; filename="[sample]txtfile_for_upload.txt"'
+    return response
