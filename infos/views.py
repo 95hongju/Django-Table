@@ -21,13 +21,19 @@ def edit(request,id):
 
 def edit_done(request,id):
     original=get_object_or_404(tbValues, pk=id)
-    original.barcode_num=request.POST['barcode_num']
-    original.freeze_num=request.POST['freeze_num']
-    original.box_num=request.POST['box_num']
-    original.rack_num=request.POST['rack_num']
-    original.well_num=request.POST['well_num']
-    original.save()
-    return HttpResponseRedirect(reverse('infos:index'))
+    f=inputForm(request.POST)
+    if f.is_valid():
+        original.barcode_num=request.POST['barcode_num']
+        original.freeze_num=request.POST['freeze_num']
+        original.box_num=request.POST['box_num']
+        original.rack_num=request.POST['rack_num']
+        original.well_num=request.POST['well_num']
+        original.save()
+        messages.info(request, 'edit done ! ')
+        return HttpResponseRedirect(reverse('infos:index'))
+    else:
+        messages.info(request, 'blank not allowed.. check the input data')
+        return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
 #get id from the html, and delete from database
 def remove(request,id):
